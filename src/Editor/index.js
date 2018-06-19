@@ -12,9 +12,51 @@ import BlockStyleControls from './blockStyleControls';
 import InlineStyleControls from './inlineStyleControls';
 import LinkControl, {Link, findLinkEntities} from './linkControl';
 import mentions from './mentions';
-import { draftToMarkdown, markdownToDraft } from 'markdown-draft-js';
+import {
+  draftToMarkdown as _draftToMarkdown,
+  markdownToDraft as _markdownToDraft
+} from 'markdown-draft-js';
 import 'draft-js/dist/Draft.css';
 import 'draft-js-mention-plugin/lib/plugin.css';
+
+
+const markdownToDraft = string => _markdownToDraft(string, {
+  blockEntities: {
+    link_open(item) {
+      if (item.href && item.href.startsWith && item.href.startsWith('_user_:')) {
+        return {
+          type: 'mention',
+          mutability: 'SEGMENTED',
+          data: {
+            mention: {
+              id: Number(item.href.split(':')[1])
+            }
+          }
+        }
+      }
+      return {
+        type: 'LINK',
+        mutability: 'MUTABLE',
+        data: {
+          url: item.href
+        }
+      };
+    }
+  }
+});
+
+const draftToMarkdown = raw => _draftToMarkdown(raw, {
+  entityItems: {
+    mention: {
+      open(entity) {
+        return '[';
+      },
+      close(entity) {
+        return `](_user_:${entity.data.mention.id})`;
+      }
+    }
+  }
+});
 
 
 
@@ -33,7 +75,6 @@ class MyEditor extends Component {
     this.mentionPlugin = createMentionPlugin();
 
     this.state = {
-      // editorState: EditorState.createEmpty(this.decorators),
       editorState: EditorState.createEmpty(),
       suggestions: mentions,
       initialMd: ''
