@@ -1,0 +1,119 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.container {
+  width: 500px;
+  margin: 20px;
+}
+
+
+.content h2 {
+  font-size: 12px;
+  margin: 0;
+  font-weight: normal;
+}
+.content textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: none;
+  border: 1px solid #000
+}
+
+.content-input h2 {
+  color: rgb(18, 163, 67);
+}
+.content-input textarea {
+  border-color: rgb(18, 163, 67);
+  background: rgba(18, 163, 67, 0.20);
+}
+
+.content-output h2 {
+  color: rgb(23, 100, 180);
+}
+.content-output textarea {
+  border-color: rgb(23, 100, 180);
+  background: rgba(23, 100, 180, 0.20);
+}
+
+.editor {
+  border: 1px solid black;
+  padding: 10px;
+  margin: 30px 0;
+}
+
+.RichEditor-root {
+  background: #fff;
+  border: 1px solid #ddd;
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+  line-height: 1.5em;
+  padding: 15px;
+}
+
+.RichEditor-editor {
+  border-top: 1px solid #ddd;
+  cursor: text;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.RichEditor-editor .public-DraftEditorPlaceholder-root,
+.RichEditor-editor .public-DraftEditor-content {
+  margin: 0 -15px -15px;
+  padding: 15px;
+}
+
+.RichEditor-editor .public-DraftEditor-content {
+  min-height: 140px;
+}
+
+.RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
+  display: none;
+}
+
+
+
+
+.RichEditor-editor .RichEditor-blockquote {
+  border-left: 5px solid pink;
+  color: #666;
+  font-family: 'Hoefler Text', 'Georgia', serif;
+  font-style: italic;
+  margin: 16px 0;
+  padding: 10px 20px;
+}
+
+.RichEditor-editor .public-DraftStyleDefault-pre {
+  background-color: rgba(255, 209, 221, 0.4);
+  color: rgb(201, 41, 85);
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 14px;
+  padding: 10px;
+}
+
+
+
+
+
+.RichEditor-controls {
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+  margin-bottom: 5px;
+  user-select: none;
+}
+
+.RichEditor-styleButton {
+  color: #999;
+  cursor: pointer;
+  margin-right: 16px;
+  padding: 2px 0;
+  display: inline-block;
+}
+
+.RichEditor-activeButton {
+  color: #5890ff;
+}

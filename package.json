@@ -1,0 +1,22 @@
+{
+  "name": "draft-mention-md",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "draft-js": "^0.10.5",
+    "draft-js-mention-plugin": "^3.0.4",
+    "draft-js-plugins-editor": "^2.1.1",
+    "markdown-draft-js": "^1.0.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "devDependencies": {
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
