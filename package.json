@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "draft-js": "^0.10.5",
+    "draft-js-anchor-plugin": "^2.0.2",
+    "draft-js-inline-toolbar-plugin": "^2.0.3",
     "draft-js-mention-plugin": "^3.0.4",
     "draft-js-plugins-editor": "^2.1.1",
     "markdown-draft-js": "^1.0.1",

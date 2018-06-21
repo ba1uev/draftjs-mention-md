@@ -8,9 +8,10 @@ import {
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import createMentionPlugin, { defaultSuggestionsFilter } from 'draft-js-mention-plugin';
+import createInlineToolbarPlugin from 'draft-js-inline-toolbar-plugin';
+import createLinkPlugin from 'draft-js-anchor-plugin';
 import BlockStyleControls from './blockStyleControls';
 import InlineStyleControls from './inlineStyleControls';
-import LinkControl, {Link, findLinkEntities} from './linkControl';
 import mentions from './mentions';
 import {
   draftToMarkdown as _draftToMarkdown,
@@ -18,6 +19,31 @@ import {
 } from 'markdown-draft-js';
 import 'draft-js/dist/Draft.css';
 import 'draft-js-mention-plugin/lib/plugin.css';
+import 'draft-js-anchor-plugin/lib/plugin.css';
+import 'draft-js-inline-toolbar-plugin/lib/plugin.css';
+
+
+function findLinkEntities(contentBlock, callback, contentState) {
+  contentBlock.findEntityRanges(
+    (character) => {
+      const entityKey = character.getEntity();
+      if (!entityKey) return false;
+      if (contentState.getEntity(entityKey).getType() === "LINK") {
+        return true;
+      };
+    },
+    callback
+  );
+}
+
+const Link = (props) => {
+  const {url} = props.contentState.getEntity(props.entityKey).getData();
+  return (
+    <a href={url} style={{color: 'red', textDecoration: 'underline'}}>
+      {props.children}
+    </a>
+  );
+};
 
 
 const markdownToDraft = string => _markdownToDraft(string, {
@@ -58,7 +84,28 @@ const draftToMarkdown = raw => _draftToMarkdown(raw, {
   }
 });
 
-
+const mentionPlugin = createMentionPlugin();
+const linkPlugin = createLinkPlugin({
+  placeholder: 'http://…'
+});
+const inlineToolbarPlugin = createInlineToolbarPlugin({
+  theme: {
+    buttonStyles: {
+      button: 'inline-toolbar-button',
+      buttonWrapper: 'inline-toolbar-button-wrapper',
+      active: 'inline-toolbar-button-active',
+    },
+    toolbarStyles: {
+      toolbar: 'inline-toolbar'
+    }
+  },
+  structure: [
+    linkPlugin.LinkButton
+  ]
+});
+const plugins = [mentionPlugin, inlineToolbarPlugin, linkPlugin];
+const { MentionSuggestions } = mentionPlugin;
+const { InlineToolbar } = inlineToolbarPlugin;
 
 class MyEditor extends Component {
 
@@ -72,8 +119,6 @@ class MyEditor extends Component {
       }
     ];
 
-    this.mentionPlugin = createMentionPlugin();
-
     this.state = {
       editorState: EditorState.createEmpty(),
       suggestions: mentions,
@@ -84,10 +129,8 @@ class MyEditor extends Component {
   }
 
   render() {
-    const { MentionSuggestions } = this.mentionPlugin;
-    const plugins = [this.mentionPlugin];
 
-    const {editorState, initialMd} = this.state;
+    const {editorState, initialMd, linkControlPosition, linkControlFocused} = this.state;
 
     let className = 'RichEditor-editor';
     var contentState = editorState.getCurrentContent();
@@ -120,11 +163,6 @@ class MyEditor extends Component {
             editorState={editorState}
             onToggle={this.toggleInlineStyle}
           />
-          <LinkControl
-            editorState={editorState}
-            saveEditorState={editorState => this.setState({editorState})}
-            _editorRef={this._editorRef}
-          />
           <div className={className} onClick={this.focus}>
             <Editor
               plugins={plugins}
@@ -136,7 +174,7 @@ class MyEditor extends Component {
               onChange={this.onChange}
               placeholder="Start typing..."
               ref={this._editorRef}
-              spellCheck={true}
+              spellCheck={false}
               decorators={this.decorators}
             />
             <MentionSuggestions
@@ -144,6 +182,7 @@ class MyEditor extends Component {
               suggestions={this.state.suggestions}
               onAddMention={this.onAddMention}
             />
+            <InlineToolbar/>
           </div>
         </div>
 
@@ -164,8 +203,8 @@ class MyEditor extends Component {
   focus = () => this._editorRef.current.focus();
 
   onChange = (editorState) => {
-    window._s = convertToRaw(editorState.getCurrentContent());
-    this.setState({editorState});
+    this.setState({ editorState });
+    window._r = convertToRaw(editorState.getCurrentContent());
   }
 
   onSearchChange = ({ value }) => {
