@@ -39,11 +39,22 @@ function findLinkEntities(contentBlock, callback, contentState) {
 const Link = (props) => {
   const {url} = props.contentState.getEntity(props.entityKey).getData();
   return (
-    <a href={url} style={{color: 'red', textDecoration: 'underline'}}>
+    <a href={url} style={{color: '#4a00ff', textDecoration: 'underline'}}>
       {props.children}
     </a>
   );
 };
+
+// const MentionSuggestionsItem = ({mention: {id, name, avatar}, isFocused}) => (
+//   <div className={`ms-item`}>
+//     <div className="ms-item-image">
+//       {avatar ? (
+//         <img src={avatar} />
+//       ) : null}
+//     </div>
+//     <div className="ms-items-name"></div>
+//   </div>
+// );
 
 
 const markdownToDraft = string => _markdownToDraft(string, {
@@ -84,7 +95,17 @@ const draftToMarkdown = raw => _draftToMarkdown(raw, {
   }
 });
 
-const mentionPlugin = createMentionPlugin();
+const mentionPlugin = createMentionPlugin({
+  entityMutability: 'IMMUTABLE',
+  theme: {
+    mention: 'mention-text',
+    // mentionSuggestions: 'mention-suggestions',
+    // mentionSuggestionsEntry: 'mention-suggestions-item',
+    // mentionSuggestionsEntryFocused: 'mention-suggestions-item-focused',
+    // mentionSuggestionsEntryText: 'mention-suggestions-item-text',
+    // mentionSuggestionsEntryAvatar: 'mention-suggestions-item-avatar'
+  }
+});
 const linkPlugin = createLinkPlugin({
   placeholder: 'http://…'
 });
