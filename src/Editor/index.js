@@ -4,7 +4,8 @@ import {
   RichUtils,
   getDefaultKeyBinding,
   convertToRaw,
-  convertFromRaw
+  convertFromRaw,
+  Modifier
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import createMentionPlugin, { defaultSuggestionsFilter } from 'draft-js-mention-plugin';
@@ -130,7 +131,7 @@ class MyEditor extends Component {
 
   render() {
 
-    const {editorState, initialMd, linkControlPosition, linkControlFocused} = this.state;
+    const {editorState, initialMd} = this.state;
 
     let className = 'RichEditor-editor';
     var contentState = editorState.getCurrentContent();
@@ -171,6 +172,7 @@ class MyEditor extends Component {
               editorState={editorState}
               handleKeyCommand={this.handleKeyCommand}
               keyBindingFn={this.mapKeyToEditorCommand}
+              handlePastedText={this.handlePastedText}
               onChange={this.onChange}
               placeholder="Start typing..."
               ref={this._editorRef}
@@ -239,6 +241,84 @@ class MyEditor extends Component {
       return;
     }
     return getDefaultKeyBinding(e);
+  }
+
+  handlePastedText = (text, styles, editorState) => {
+    const regexp = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+    if (text.match(regexp)) {
+      let arr;
+      const matches = [];
+      const edges = [];
+      while ((arr = regexp.exec(text)) !== null) {
+        matches.push({
+          url: arr[0],
+          end: regexp.lastIndex,
+          start: regexp.lastIndex - arr[0].length
+        });
+        edges.push(regexp.lastIndex - arr[0].length, regexp.lastIndex);
+      }
+      console.warn({matches, text});
+      if (edges[0] !== 0) edges.unshift(0);
+      if (edges[edges.length - 1] !== text.length - 1) edges.push(text.length);
+
+      for (let i = 0; i < edges.length - 1; i++) {
+        const chunk = text.substring(edges[i], edges[i + 1]);
+        console.log('[CHUNK]: ', chunk);
+        if (regexp.test(chunk)) {
+          const contentState = this.state.editorState.getCurrentContent();
+          const selection = this.state.editorState.getSelection();
+          const contentStateWithEntity = contentState.createEntity(
+            'LINK',
+            'MUTABLE',
+            { url: text }
+          );
+          const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+          const textWithEntity = Modifier.insertText(contentStateWithEntity, selection, text, null, entityKey);
+          // editorState = EditorState.push(editorState, textWithEntity, 'insert-link');
+          this.setState({
+            editorState: EditorState.push(editorState, textWithEntity, 'insert-link')
+          }, () => {
+            this.focus();
+          });
+        } else {
+          const contentState = this.state.editorState.getCurrentContent();
+          const selection = this.state.editorState.getSelection();
+          const plainText = Modifier.insertText(contentState, selection, text, null, null);
+          // editorState = EditorState.push(editorState, textWithEntity, 'insert-link');
+          this.setState({
+            editorState: EditorState.push(editorState, plainText, 'insert-text')
+          }, () => {
+            this.focus();
+          });
+        }
+      }
+      return 'handled';
+    }
+
+    // if (text.includes('http://')) {
+    //   const contentState = editorState.getCurrentContent();
+    //   const selection = editorState.getSelection();
+    //   const contentStateWithEntity = contentState.createEntity(
+    //     'LINK',
+    //     'MUTABLE',
+    //     { url: text }
+    //   );
+    //   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    //   const textWithEntity = Modifier.insertText(contentStateWithEntity, selection, text, null, entityKey);
+    //   this.setState({
+    //     editorState: EditorState.push(editorState, textWithEntity, 'insert-link')
+    //   }, () => {
+    //     this.focus();
+    //   });
+    //   return 'handled'
+    //   /*
+    //
+    //   + check if text includes URL
+    //   + text.split(' ').map(s => s.match(regexp))
+    //
+    //   */
+    // };
+
   }
 
   toggleBlockType = (blockType) => {
