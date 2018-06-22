@@ -45,16 +45,16 @@ const Link = (props) => {
   );
 };
 
-// const MentionSuggestionsItem = ({mention: {id, name, avatar}, isFocused}) => (
-//   <div className={`ms-item`}>
-//     <div className="ms-item-image">
-//       {avatar ? (
-//         <img src={avatar} />
-//       ) : null}
-//     </div>
-//     <div className="ms-items-name"></div>
-//   </div>
-// );
+const MentionSuggestionsItem = ({mention: {id, name, avatar}, isFocused}) => (
+  <div className={`ms-item`}>
+    <div className="ms-item-image">
+      {avatar ? (
+        <img src={avatar} />
+      ) : null}
+    </div>
+    <div className="ms-items-name">{name}</div>
+  </div>
+);
 
 
 const markdownToDraft = string => _markdownToDraft(string, {
@@ -99,7 +99,7 @@ const mentionPlugin = createMentionPlugin({
   entityMutability: 'IMMUTABLE',
   theme: {
     mention: 'mention-text',
-    // mentionSuggestions: 'mention-suggestions',
+    mentionSuggestions: 'mention-suggestions',
     // mentionSuggestionsEntry: 'mention-suggestions-item',
     // mentionSuggestionsEntryFocused: 'mention-suggestions-item-focused',
     // mentionSuggestionsEntryText: 'mention-suggestions-item-text',
@@ -151,7 +151,7 @@ class MyEditor extends Component {
 
   render() {
 
-    const {editorState, initialMd, linkControlPosition, linkControlFocused} = this.state;
+    const {editorState, initialMd} = this.state;
 
     let className = 'RichEditor-editor';
     var contentState = editorState.getCurrentContent();
@@ -202,6 +202,7 @@ class MyEditor extends Component {
               onSearchChange={this.onSearchChange}
               suggestions={this.state.suggestions}
               onAddMention={this.onAddMention}
+              entryComponent={MentionSuggestionsItem}
             />
             <InlineToolbar/>
           </div>

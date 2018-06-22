@@ -116,9 +116,10 @@ body {
 .mention-text {
   background: rgb(237, 230, 255);
   border-radius: 4px;
-  padding: 4px;
+  padding: 0 4px;
   color: #000;
   text-decoration: none;
+  display: inline-block;
 }
 
 .mention-suggestions {
@@ -127,7 +128,31 @@ body {
   width: 282px;
   border-radius: 4px;
   box-shadow: 0 3px 8px 0 rgba(0,0,0,.2);
+  padding: 16px 0;
+  border: 1px solid #ddd;
+  z-index: 2;
+  transform: scale(0);
 }
+
+.ms-item {
+  width: 100%;
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.ms-item-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.ms-item-image img {
+  display: block;
+  width: 100%;
+}
+
 
 
 
