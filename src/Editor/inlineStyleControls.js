@@ -4,8 +4,8 @@ import StyleButton from './styleButton';
 export const INLINE_STYLES = [
   {label: 'Bold', style: 'BOLD'},
   {label: 'Italic', style: 'ITALIC'},
-  {label: 'Underline', style: 'UNDERLINE'},
-  {label: 'Monospace', style: 'CODE'},
+  // {label: 'Underline', style: 'UNDERLINE'},
+  // {label: 'Monospace', style: 'CODE'},
 ];
 
 const InlineStyleControls = (props) => {

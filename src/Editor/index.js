@@ -17,6 +17,7 @@ import {
   draftToMarkdown as _draftToMarkdown,
   markdownToDraft as _markdownToDraft
 } from 'markdown-draft-js';
+import Remarkable from 'remarkable';
 import 'draft-js/dist/Draft.css';
 import 'draft-js-mention-plugin/lib/plugin.css';
 import 'draft-js-anchor-plugin/lib/plugin.css';
@@ -95,6 +96,8 @@ const draftToMarkdown = raw => _draftToMarkdown(raw, {
   }
 });
 
+const md = new Remarkable();
+
 const mentionPlugin = createMentionPlugin({
   entityMutability: 'IMMUTABLE',
   theme: {
@@ -161,18 +164,31 @@ class MyEditor extends Component {
       }
     }
 
+    const outputMd = draftToMarkdown(convertToRaw(editorState.getCurrentContent()));
+
     return (
       <div className="wrapper">
 
-        <div className="content content-input">
-          <h2>Load MD content in Editor</h2>
-          <textarea
-            spellCheck={false}
-            value={initialMd}
-            onChange={ev => this.setState({ initialMd: ev.target.value })}
-          >
-          </textarea>
-          <button onClick={this.onLoadMd}>Load MD</button>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <div className="content content-input">
+            <h2>Load MD content in Editor</h2>
+            <textarea
+              spellCheck={false}
+              value={initialMd}
+              onChange={ev => this.setState({ initialMd: ev.target.value })}
+            >
+            </textarea>
+            <button onClick={this.onLoadMd}>Load MD</button>
+          </div>
+          <div className="content content-output">
+            <h2>Current Editor content</h2>
+            <textarea
+              spellCheck={false}
+              value={outputMd}
+            >
+            </textarea>
+            <button onClick={this.onReset} style={{border: '1px solid red', borderRadius: '4px', background: '#fff', color: 'red'}}>Clear content</button>
+          </div>
         </div>
 
         <div className="editor">
@@ -208,15 +224,10 @@ class MyEditor extends Component {
           </div>
         </div>
 
-        <div className="content content-output">
-          <h2>Current Editor content</h2>
-          <textarea
-            spellCheck={false}
-            value={draftToMarkdown(convertToRaw(editorState.getCurrentContent()))}
-          >
-          </textarea>
-          <button onClick={this.onReset} style={{border: '1px solid red', borderRadius: '4px', background: '#fff', color: 'red'}}>Clear content</button>
-        </div>
+        <div
+          className="result"
+          dangerouslySetInnerHTML={{__html: md.render(outputMd)}}
+        />
 
       </div>
     );
@@ -226,7 +237,7 @@ class MyEditor extends Component {
 
   onChange = (editorState) => {
     this.setState({ editorState });
-    window._r = convertToRaw(editorState.getCurrentContent());
+    // window._r = convertToRaw(editorState.getCurrentContent());
   }
 
   onSearchChange = ({ value }) => {
